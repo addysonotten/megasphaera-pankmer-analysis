@@ -30,5 +30,6 @@ metavf_analysis/output/
 metavf_analysis/logs/
 
 # AMR figures analysis
-amr_analysis/
+amr_analysis/*.png
+amr_analysis/*.pdf
 
