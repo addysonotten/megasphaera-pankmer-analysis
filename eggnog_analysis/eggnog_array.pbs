@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -N eggnog_array
+#PBS -l select=1:ncpus=8:mem=32gb
+#PBS -l walltime=04:00:00
+#PBS -J 1-61
+#PBS -o /home/ottena/mags_project/eggnog_analysis/logs/
+#PBS -e /home/ottena/mags_project/eggnog_analysis/logs/
+
+GENOME_LIST=/home/ottena/mags_project/genome_list.txt
+BAKTA_OUT=/home/ottena/mags_project/bakta_analysis/output
+EGGNOG_OUT=/home/ottena/mags_project/eggnog_analysis/output
+EGGNOG_DB=/data/minichj_shared/databases/eggnog/v5
+THREADS=8
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate eggnog_env
+
+GENOME=$(sed -n "${PBS_ARRAY_INDEX}p" "$GENOME_LIST")
+FAA="$BAKTA_OUT/$GENOME/$GENOME.faa"
+
+echo "Running EggNOG-mapper on: $GENOME"
+
+emapper.py \
+    -i "$FAA" \
+    --output "$GENOME" \
+    --output_dir "$EGGNOG_OUT" \
+    --data_dir "$EGGNOG_DB" \
+    --cpu "$THREADS" \
+    --dmnd_algo ctg \
+    --override \
+    -m diamond
+
+echo "Done: $GENOME"
+# paste script here

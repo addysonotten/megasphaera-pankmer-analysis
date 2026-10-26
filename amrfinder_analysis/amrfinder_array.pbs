@@ -1,0 +1,44 @@
+#!/bin/bash
+#PBS -N amrfinder_array
+#PBS -l select=1:ncpus=8:mem=16gb
+#PBS -l walltime=02:00:00
+#PBS -J 1-61
+#PBS -o /home/ottena/mags_project/amrfinder_analysis/logs/
+#PBS -e /home/ottena/mags_project/amrfinder_analysis/logs/
+
+# === PATHS ===
+BAKTA_OUT=/home/ottena/mags_project/bakta_analysis/output
+AMR_OUT=/home/ottena/mags_project/amrfinder_analysis/output
+AMR_DB=/data/minichj_shared/software/databases/bakta/bakta_db/db/amrfinderplus-db/2026-05-15.1
+THREADS=8
+
+# === SETUP ===
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate bakta_env
+
+mkdir -p "$AMR_OUT"
+mkdir -p /home/ottena/mags_project/amrfinder_analysis/logs
+
+# === GET GENOME FOR THIS ARRAY INDEX ===
+GENOME=$(ls -d "$BAKTA_OUT"/*/ | sed "s|/$||" | xargs -I{} basename {} | sed -n "${PBS_ARRAY_INDEX}p")
+
+FAA="$BAKTA_OUT/$GENOME/$GENOME.faa"
+GFF="$BAKTA_OUT/$GENOME/$GENOME.gff3"
+OUTFILE="$AMR_OUT/${GENOME}_amrfinder.tsv"
+
+echo "Running AMRFinderPlus on: $GENOME"
+echo "  Protein: $FAA"
+echo "  GFF:     $GFF"
+echo "  Output:  $OUTFILE"
+
+# === RUN AMRFINDERPLUS ===
+amrfinder \
+    --protein "$FAA" \
+    --gff "$GFF" \
+    --annotation_format bakta \
+    --database "$AMR_DB" \
+    --name "$GENOME" \
+    --threads "$THREADS" \
+    --output "$OUTFILE"
+
+echo "Done: $GENOME"

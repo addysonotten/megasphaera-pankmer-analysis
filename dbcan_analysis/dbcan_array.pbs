@@ -1,0 +1,43 @@
+#!/bin/bash
+#PBS -N dbcan_array
+#PBS -l select=1:ncpus=8:mem=32gb
+#PBS -l walltime=04:00:00
+#PBS -J 1-61
+#PBS -o /home/ottena/mags_project/dbcan_analysis/logs/
+#PBS -e /home/ottena/mags_project/dbcan_analysis/logs/
+
+# === PATHS ===
+GENOME_LIST=/home/ottena/mags_project/genome_list.txt
+BAKTA_OUT=/home/ottena/mags_project/bakta_analysis/output
+DBCAN_OUT=/home/ottena/mags_project/dbcan_analysis/output
+DBCAN_DB=/data/minichj_shared/software/databases/dbcan
+THREADS=8
+
+# === SETUP ===
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate dbcan-env
+
+mkdir -p "$DBCAN_OUT"
+mkdir -p /home/ottena/mags_project/dbcan_analysis/logs
+
+# === GET GENOME FOR THIS ARRAY INDEX ===
+GENOME=$(sed -n "${PBS_ARRAY_INDEX}p" "$GENOME_LIST")
+FAA="$BAKTA_OUT/$GENOME/$GENOME.faa"
+OUTDIR="$DBCAN_OUT/$GENOME"
+
+mkdir -p "$OUTDIR"
+
+echo "Running dbCAN on: $GENOME"
+echo "  Input: $FAA"
+echo "  Output: $OUTDIR"
+
+# === RUN DBCAN ===
+run_dbcan CAZyme_annotation \
+    --mode protein \
+    --input_raw_data "$FAA" \
+    --output_dir "$OUTDIR" \
+    --db_dir "$DBCAN_DB" \
+    --threads "$THREADS" \
+    --methods diamond,hmm,dbCANsub
+
+echo "Done: $GENOME"

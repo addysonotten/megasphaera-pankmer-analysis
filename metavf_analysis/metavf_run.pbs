@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -N metavf_run
+#PBS -l select=1:ncpus=16:mem=64gb
+#PBS -l walltime=08:00:00
+#PBS -o /home/ottena/mags_project/metavf_analysis/logs/
+#PBS -e /home/ottena/mags_project/metavf_analysis/logs/
+
+# === PATHS ===
+METAVF=/data/minichj_shared/software/MetaVF_toolkit
+INPUT=/home/ottena/mags_project/metavf_analysis/input
+OUTPUT=/home/ottena/mags_project/metavf_analysis/output
+
+# === SETUP ===
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate MetaVF_toolkit
+export PATH=$METAVF:$PATH
+
+mkdir -p "$OUTPUT"
+mkdir -p /home/ottena/mags_project/metavf_analysis/logs
+
+# === RUN METAVF ===
+echo "Starting MetaVF run..."
+
+metaVF.py \
+    -p "$METAVF" \
+    -pjn mags_project \
+    -id "$INPUT" \
+    -outd "$OUTPUT" \
+    -m draft \
+    -ti 90 \
+    -tc 80 \
+    -c 16
+
+echo "Done!"

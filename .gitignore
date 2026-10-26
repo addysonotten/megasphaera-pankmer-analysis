@@ -11,3 +11,24 @@ bakta_analysis/all_faa/
 bakta_analysis/all_hypotheticals/
 bakta_analysis/renamed/
 bakta_analysis/summary/all_summaries.csv
+
+# AMRFinderPlus
+amrfinder_analysis/output/
+amrfinder_analysis/logs/
+
+# EggNOG
+eggnog_analysis/output/
+eggnog_analysis/logs/
+
+# dbCAN
+dbcan_analysis/output/
+dbcan_analysis/logs/
+
+# MetaVF
+metavf_analysis/input/
+metavf_analysis/output/
+metavf_analysis/logs/
+
+# AMR figures analysis
+amr_analysis/
+

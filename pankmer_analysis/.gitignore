@@ -1,0 +1,7 @@
+all_genomes/
+pankmer_output_v2/
+ncbi_genomes/
+*.fasta
+*.fna
+rename_filled.csv
+pankmer_env/
