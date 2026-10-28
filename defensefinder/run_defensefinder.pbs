@@ -1,0 +1,35 @@
+#!/bin/bash
+#PBS -N defensefinder
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=04:00:00
+#PBS -l mem=16gb
+#PBS -j oe
+#PBS -o /home/ottena/mags_project/defensefinder_analysis/logs/
+#PBS -J 1-61
+
+# Load conda
+source /home/ottena/miniconda3/etc/profile.d/conda.sh
+conda activate defensefinder_env
+
+# Paths
+GENOME_LIST=/home/ottena/mags_project/genome_list.txt
+FAA_DIR=/home/ottena/mags_project/bakta_analysis/all_faa
+OUTDIR=/home/ottena/mags_project/defensefinder_analysis/output
+DB=/home/ottena/mags_project/defensefinder_analysis/db
+
+# Get genome name for this array task
+GENOME=$(sed -n "${PBS_ARRAY_INDEX}p" $GENOME_LIST)
+
+echo "Running DefenseFinder on: $GENOME"
+
+# Create output directory
+mkdir -p $OUTDIR/$GENOME
+
+# Run DefenseFinder
+defense-finder run \
+    --models-dir $DB \
+    --out-dir $OUTDIR/$GENOME \
+    --workers 8 \
+    $FAA_DIR/$GENOME.faa
+
+echo "Done: $GENOME"
