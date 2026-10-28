@@ -33,3 +33,9 @@ metavf_analysis/logs/
 amr_analysis/*.png
 amr_analysis/*.pdf
 
+
+# VFDB
+vfdb_analysis/output/
+vfdb_analysis/output_strict/
+vfdb_analysis/database/
+vfdb_analysis/*.png
