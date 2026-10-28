@@ -1,0 +1,38 @@
+#!/bin/bash
+#PBS -N vfdb_strict
+#PBS -l select=1:ncpus=8:mem=16gb
+#PBS -l walltime=02:00:00
+#PBS -J 1-61
+#PBS -o /home/ottena/mags_project/vfdb_analysis/logs/
+#PBS -e /home/ottena/mags_project/vfdb_analysis/logs/
+
+GENOME_LIST=/home/ottena/mags_project/genome_list.txt
+BAKTA_OUT=/home/ottena/mags_project/bakta_analysis/output
+VFDB_OUT=/home/ottena/mags_project/vfdb_analysis/output_strict
+VFDB_DB=/home/ottena/mags_project/vfdb_analysis/database/VFDB_setB_pro
+THREADS=8
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate bakta_env
+
+mkdir -p "$VFDB_OUT"
+
+GENOME=$(sed -n "${PBS_ARRAY_INDEX}p" "$GENOME_LIST")
+FAA="$BAKTA_OUT/$GENOME/$GENOME.faa"
+OUTFILE="$VFDB_OUT/${GENOME}_vfdb_strict.tsv"
+
+echo "Running VFDB strict search on: $GENOME"
+
+diamond blastp \
+    --query "$FAA" \
+    --db "$VFDB_DB" \
+    --out "$OUTFILE" \
+    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle \
+    --evalue 1e-10 \
+    --id 50 \
+    --query-cover 70 \
+    --threads "$THREADS" \
+    --max-target-seqs 1 \
+    --sensitive
+
+echo "Done: $GENOME"
