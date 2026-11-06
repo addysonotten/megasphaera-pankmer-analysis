@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -N genomad_array
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=04:00:00
+#PBS -l mem=16gb
+#PBS -J 1-61
+#PBS -o /home/ottena/mags_project/genomad_analysis/logs/
+#PBS -e /home/ottena/mags_project/genomad_analysis/logs/
+
+source ~/.bashrc
+conda activate genomad_env
+
+GENOME_LIST=/home/ottena/mags_project/genome_list.txt
+DB=/home/ottena/mags_project/genomad_analysis/database/genomad_db
+BAKTA_DIR=/home/ottena/mags_project/bakta_analysis/output
+OUTDIR=/home/ottena/mags_project/genomad_analysis/output
+
+GENOME=$(sed -n "${PBS_ARRAY_INDEX}p" ${GENOME_LIST})
+
+mkdir -p ${OUTDIR}/${GENOME}
+
+genomad end-to-end \
+    ${BAKTA_DIR}/${GENOME}/${GENOME}.fna \
+    ${OUTDIR}/${GENOME} \
+    ${DB} \
+    --threads 8 \
+    --cleanup

@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N genomad_db_download
+#PBS -l nodes=1:ppn=4
+#PBS -l walltime=02:00:00
+#PBS -l mem=8gb
+#PBS -o /home/ottena/mags_project/genomad_analysis/logs/db_download.out
+#PBS -e /home/ottena/mags_project/genomad_analysis/logs/db_download.err
+
+source ~/.bashrc
+conda activate genomad_env
+
+genomad download-database \
+    /home/ottena/mags_project/genomad_analysis/database
